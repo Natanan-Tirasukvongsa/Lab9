@@ -608,6 +608,7 @@ void DynamixelProtocal2(uint8_t *Memory, uint8_t MotorID, int16_t dataIn,
 			case 0x01:// ping
 			{
 				//create packet template
+				//H1 H2 H3 RSRV PACKET_ID LEN1 LEN2 INST ERR CRC1 CRC2
 				uint8_t temp[] =
 				{ 0xff, 0xff, 0xfd, 0x00, 0x00, 0x05, 0x00, 0x55, 0x00, 0x00,
 						0x00 };
@@ -633,6 +634,7 @@ void DynamixelProtocal2(uint8_t *Memory, uint8_t MotorID, int16_t dataIn,
 				uint16_t numberOfDataToRead = (parameter[2]&0xFF)|(parameter[3]<<8 &0xFF);
 
 				//packgage ตอบกลับ
+				//H1 H2 H3 RSRV PACKET_ID LEN1 LEN2 INST ERR
 				uint8_t temp[] = {0xff,0xff,0xfd,0x00,0x00,0x00,0x00,0x55,0x00};
 				temp[4] = MotorID;
 
@@ -658,7 +660,31 @@ void DynamixelProtocal2(uint8_t *Memory, uint8_t MotorID, int16_t dataIn,
 			case 0x03://WRITE
 			{
 				//LAB
+				//parameter 0 + parameter 1
+				uint16_t startAddr = (parameter[0]&0xFF)|(parameter[1]<<8 &0xFF);
+				//packgage ตอบกลับ
+				//H1 H2 H3 RSRV PACKET_ID LEN1 LEN2 INST ERR CRC1 CRC2
+				uint8_t temp[] = { 0xff, 0xff, 0xfd, 0x00, 0x00, 0x04, 0x00, 0x55, 0x00};
+
+				temp[4] = MotorID;
+
+				uint16_t crc_calc = update_crc(0, temp, 9);
+				crc_calc = update_crc(crc_calc ,&(Memory[startAddr]),numberOfDataToRead); //คำนวน crc ต่อ
+				uint8_t crctemp[2];
+				crctemp[0] = crc_calc&0xff;
+				crctemp[1] = (crc_calc>>8)&0xff;
+
+				//send temp
+				UARTTxWrite(uart, temp,9);
+
+				//send data in memory from initial position
+				UARTTxWrite(uart, &(Memory[startAddr]),numberOfDataToRead);
+
+				//send crc
+				UARTTxWrite(uart, crctemp,2);
+				break;
 			}
+
 			default: //Unknown Inst
 			{
 				uint8_t temp[] =
