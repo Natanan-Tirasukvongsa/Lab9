@@ -199,6 +199,7 @@ int main(void)
   while (1)
   {
 	  //เก็บข้อมูล
+	  //อ่านข้อมูลทีละ byte (8 bits)
 	  int16_t inputChar = UARTReadChar(&UART2);
 	  		if (inputChar != -1) //มีตัวอักษรใหม่เข้ามา
 	  		{
@@ -531,40 +532,43 @@ void DynamixelProtocal2(uint8_t *Memory, uint8_t MotorID, int16_t dataIn,
 		else
 			State = DNMXP_idle;
 		break;
-	case DNMXP_Reserved: //ID motor
-		if ((dataIn == MotorID) | (dataIn == 0xFE))
+	case DNMXP_Reserved: //check ID motor
+		//วิธีนี้ดีคือ switch case ไม่วิ่งไปไกล แต่ข้อเสียอาจทำให้ เกิดการผิดพลาดของการเรียง switch case
+		if ((dataIn == MotorID) | (dataIn == 0xFE)) //broadcast ID = 0xFE ID สำหรับการกระจายให้กับ dynamixel หลายๆตัว
 			State = DNMXP_ID;
 		else
 			State = DNMXP_idle; //ID ไม่ตรง
 		break;
 	case DNMXP_ID:
-		datalen = dataIn & 0xFF;
+		datalen = dataIn & 0xFF; //data len low
 		State = DNMXP_LEN1;
 		break;
 	case DNMXP_LEN1:
-		datalen |= (dataIn & 0xFF) << 8;
+		datalen |= (dataIn & 0xFF) << 8; //data len high
 		State = DNMXP_LEN2;
 		break;
 	case DNMXP_LEN2:
-		inst = dataIn;
+		inst = dataIn; //keep instruction
 		State = DNMXP_Inst;
 		break;
 	case DNMXP_Inst:
-		if (datalen > 3)
+		//3 = crc1+crc2+inst
+		//ความยาวของ parameter ทั้งหมด + 3 =datalen
+		if (datalen > 3) //len >3 คือมี parameter ให้เก็บ
 		{
-			parameter[0] = dataIn;
+			parameter[0] = dataIn; //first parameter
 			CollectedData = 1; //inst 1 + para[0] 1
 			State = DNMXP_ParameterCollect;
 		}
-		else  //ถ้าน้อยกว่า 3 ไม่มี parameter ข้ามได้เลย
+		else  //ถ้าน้อยกว่า 3 คือไม่มี parameter ข้ามได้เลย
 		{
 			CRCCheck = dataIn & 0xff;
-			State = DNMXP_CRCAndExecute;
+			State = DNMXP_CRCAndExecute; //check crc
 		}
 
 		break;
 	case DNMXP_ParameterCollect:
-
+		//เก็บครบทุก parameer
 		if (datalen-3 > CollectedData)
 		{
 			parameter[CollectedData] = dataIn;
@@ -572,20 +576,22 @@ void DynamixelProtocal2(uint8_t *Memory, uint8_t MotorID, int16_t dataIn,
 		}
 		else
 		{
-			CRCCheck = dataIn & 0xff;
+			CRCCheck = dataIn & 0xff; //crc low
 			State = DNMXP_CRCAndExecute;
 		}
 		break;
 	case DNMXP_CRCAndExecute: //crc ที่รับได้และที่มีตรงกนไหม
-		CRCCheck |= (dataIn & 0xff) << 8; //รับcrc ตัวสุดท้าย
+		CRCCheck |= (dataIn & 0xff) << 8; //รับcrc ตัวสุดท้าย //crc high
 		//Check CRC
 		CRC_accum = 0;
-		packetSize = datalen + 7;
+		packetSize = datalen + 7; //H1 H2 H3 rsv ID CRC1 CRC2
 		//check overlapse buffer
-		if (uart->RxTail - packetSize >= 0) //not overlapse
+		if (uart->RxTail - packetSize >= 0) //not overlapse //packgage ไม่ถูกตัดตอน
 		{
 			//add data crc
 			//ข้อมูลที่รับเข้ามาทั้งหมดใส่ crc
+			//data keep in ring buffer of uart
+			//tail ตำแหน่ง array
 			CRC_accum = update_crc(CRC_accum,
 					&(uart->RxBuffer[uart->RxTail - packetSize]), //ตำแหน่งปัจจุบัน - packgage = อ่านข้อมูลย้อนหลังตาม buffer รับข้อมูลทั้งหมด
 					packetSize - 2);
@@ -610,8 +616,7 @@ void DynamixelProtocal2(uint8_t *Memory, uint8_t MotorID, int16_t dataIn,
 				//create packet template
 				//H1 H2 H3 RSRV PACKET_ID LEN1 LEN2 INST ERR CRC1 CRC2
 				uint8_t temp[] =
-				{ 0xff, 0xff, 0xfd, 0x00, 0x00, 0x05, 0x00, 0x55, 0x00, 0x00,
-						0x00 };
+				{ 0xff, 0xff, 0xfd, 0x00, 0x00, 0x04, 0x00, 0x55, 0x00, 0x00,0x00 };
 				//config MotorID
 				temp[4] = MotorID;
 				//calcuate CRC สามารถคำนวนต่อเนื่องได้
@@ -627,11 +632,13 @@ void DynamixelProtocal2(uint8_t *Memory, uint8_t MotorID, int16_t dataIn,
 			{
 				//ตำแหน่งที่ต้องการอ่าน
 				//parameter 0 + parameter 1
-				uint16_t startAddr = (parameter[0]&0xFF)|(parameter[1]<<8 &0xFF);
+				uint16_t startAddr = (parameter[0]&0xFF)|(parameter[1]<<8 &0xFF); //low + high //0xFF filter 8 bit
 
 				//จำนวนช่อง array ที่ต้องการอ่าน
 				//parameter 3 + parameter 4
 				uint16_t numberOfDataToRead = (parameter[2]&0xFF)|(parameter[3]<<8 &0xFF);
+
+				//ex 0x84 0x00 0x04 0x00 = ตำแหน่ง 84 อ่านไป 4 ตัว
 
 				//packgage ตอบกลับ
 				//H1 H2 H3 RSRV PACKET_ID LEN1 LEN2 INST ERR
@@ -639,10 +646,11 @@ void DynamixelProtocal2(uint8_t *Memory, uint8_t MotorID, int16_t dataIn,
 				temp[4] = MotorID;
 
 				//จำนวนช่องที่ต้องการอ่าน
-				temp[5] = (numberOfDataToRead + 4) & 0xff ; // +inst+err+crc1+crc2
-				temp[6] = ((numberOfDataToRead + 4)>>8) & 0xff ;
-				uint16_t crc_calc = update_crc(0, temp, 9);
-				crc_calc = update_crc(crc_calc ,&(Memory[startAddr]),numberOfDataToRead); //คำนวน crc ต่อ
+				// +inst+err+crc1+crc2
+				temp[5] = (numberOfDataToRead + 4) & 0xff ; //len low
+				temp[6] = ((numberOfDataToRead + 4)>>8) & 0xff ; //len high
+				uint16_t crc_calc = update_crc(0, temp, 9); //crc H1-ERR
+				crc_calc = update_crc(crc_calc ,&(Memory[startAddr]),numberOfDataToRead); //คำนวน crc ต่อ //parameter
 				uint8_t crctemp[2];
 				crctemp[0] = crc_calc&0xff;
 				crctemp[1] = (crc_calc>>8)&0xff;
@@ -659,17 +667,17 @@ void DynamixelProtocal2(uint8_t *Memory, uint8_t MotorID, int16_t dataIn,
 			}
 			case 0x03://WRITE
 			{
-				//LAB
-				//parameter 0 + parameter 1
+//				//LAB
+//				//parameter 0 + parameter 1
 				uint16_t startAddr = (parameter[0]&0xFF)|(parameter[1]<<8 &0xFF);
-				//packgage ตอบกลับ
-				//H1 H2 H3 RSRV PACKET_ID LEN1 LEN2 INST ERR CRC1 CRC2
-				uint8_t temp[] = { 0xff, 0xff, 0xfd, 0x00, 0x00, 0x04, 0x00, 0x55, 0x00};
 
+				//packgage ตอบกลับ
+				//H1 H2 H3 RSRV PACKET_ID LEN1 LEN2 INST ERR
+				uint8_t temp[] = {0xff,0xff,0xfd,0x00,0x00,0x04,0x00,0x55,0x00};
 				temp[4] = MotorID;
 
 				uint16_t crc_calc = update_crc(0, temp, 9);
-				crc_calc = update_crc(crc_calc ,&(Memory[startAddr]),numberOfDataToRead); //คำนวน crc ต่อ
+				//crc_calc = update_crc(crc_calc ,&(Memory[startAddr]),9); //คำนวน crc ต่อ
 				uint8_t crctemp[2];
 				crctemp[0] = crc_calc&0xff;
 				crctemp[1] = (crc_calc>>8)&0xff;
@@ -677,11 +685,18 @@ void DynamixelProtocal2(uint8_t *Memory, uint8_t MotorID, int16_t dataIn,
 				//send temp
 				UARTTxWrite(uart, temp,9);
 
-				//send data in memory from initial position
-				UARTTxWrite(uart, &(Memory[startAddr]),numberOfDataToRead);
-
 				//send crc
 				UARTTxWrite(uart, crctemp,2);
+
+
+				//0x74 +0x00 =116
+				int i=0;
+				//all parameter - parameter[0] - parameter[1]
+				for (i = 0; i < CollectedData-2; i++)
+				{
+					MainMemory[startAddr+i] = parameter[2+i];
+				}
+
 				break;
 			}
 
