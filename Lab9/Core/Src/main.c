@@ -517,6 +517,8 @@ void DynamixelProtocal2(uint8_t *Memory, uint8_t MotorID, int16_t dataIn,
 	case DNMXP_1stHeader:
 		if (dataIn == 0xFF)
 			State = DNMXP_2ndHeader;
+		else
+			State = DNMXP_idle;
 		break;
 	case DNMXP_2ndHeader:
 		if (dataIn == 0xFD)
@@ -636,7 +638,7 @@ void DynamixelProtocal2(uint8_t *Memory, uint8_t MotorID, int16_t dataIn,
 
 				//จำนวนช่อง array ที่ต้องการอ่าน
 				//parameter 3 + parameter 4
-				uint16_t numberOfDataToRead = (parameter[2]&0xFF)|(parameter[3]<<8 &0xFF);
+				uint16_t numberOfDataToRead = (parameter[2]&0xFF)|(parameter[3]&0xFF<<8 );
 
 				//ex 0x84 0x00 0x04 0x00 = ตำแหน่ง 84 อ่านไป 4 ตัว
 
@@ -669,7 +671,7 @@ void DynamixelProtocal2(uint8_t *Memory, uint8_t MotorID, int16_t dataIn,
 			{
 //				//LAB
 //				//parameter 0 + parameter 1
-				uint16_t startAddr = (parameter[0]&0xFF)|(parameter[1]<<8 &0xFF);
+				uint16_t startAddr = (parameter[0]&0xFF)|(parameter[1]&0xFF<<8);
 
 				//packgage ตอบกลับ
 				//H1 H2 H3 RSRV PACKET_ID LEN1 LEN2 INST ERR

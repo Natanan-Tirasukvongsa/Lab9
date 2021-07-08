@@ -37,13 +37,13 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  16 .debug_macro  000166bd  00000000  00000000  0002c528  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   000087e2  00000000  00000000  00042be5  2**0
+ 17 .debug_line   000087eb  00000000  00000000  00042be5  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    00087000  00000000  00000000  0004b3c7  2**0
+ 18 .debug_str    00087000  00000000  00000000  0004b3d0  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000053  00000000  00000000  000d23c7  2**0
+ 19 .comment      00000053  00000000  00000000  000d23d0  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  0000342c  00000000  00000000  000d241c  2**2
+ 20 .debug_frame  0000342c  00000000  00000000  000d2424  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -1378,11 +1378,11 @@ int main(void)
   UARTResetStart(&UART2);
  800102e:	480c      	ldr	r0, [pc, #48]	; (8001060 <main+0x64>)
  8001030:	f000 f970 	bl	8001314 <UARTResetStart>
-  /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
 	  //เก็บข้อมูล
+	  //อ่านข้อมูลทีละ byte (8 bits)
 	  int16_t inputChar = UARTReadChar(&UART2);
  8001034:	480a      	ldr	r0, [pc, #40]	; (8001060 <main+0x64>)
  8001036:	f000 f991 	bl	800135c <UARTReadChar>
@@ -2210,7 +2210,7 @@ void DynamixelProtocal2(uint8_t *Memory, uint8_t MotorID, int16_t dataIn,
 
 	//State Machine
 	switch (State)
- 80014f2:	4b9a      	ldr	r3, [pc, #616]	; (800175c <DynamixelProtocal2+0x27c>)
+ 80014f2:	4b9b      	ldr	r3, [pc, #620]	; (8001760 <DynamixelProtocal2+0x280>)
  80014f4:	781b      	ldrb	r3, [r3, #0]
  80014f6:	2b0a      	cmp	r3, #10
  80014f8:	f200 8269 	bhi.w	80019ce <DynamixelProtocal2+0x4ee>
@@ -2219,730 +2219,739 @@ void DynamixelProtocal2(uint8_t *Memory, uint8_t MotorID, int16_t dataIn,
  8001502:	bf00      	nop
  8001504:	08001531 	.word	0x08001531
  8001508:	08001543 	.word	0x08001543
- 800150c:	08001555 	.word	0x08001555
- 8001510:	08001577 	.word	0x08001577
- 8001514:	0800158f 	.word	0x0800158f
- 8001518:	080015c5 	.word	0x080015c5
- 800151c:	080015d7 	.word	0x080015d7
- 8001520:	080015f5 	.word	0x080015f5
- 8001524:	08001605 	.word	0x08001605
- 8001528:	08001635 	.word	0x08001635
- 800152c:	08001671 	.word	0x08001671
+ 800150c:	0800155b 	.word	0x0800155b
+ 8001510:	0800157d 	.word	0x0800157d
+ 8001514:	08001595 	.word	0x08001595
+ 8001518:	080015cb 	.word	0x080015cb
+ 800151c:	080015dd 	.word	0x080015dd
+ 8001520:	080015fb 	.word	0x080015fb
+ 8001524:	0800160b 	.word	0x0800160b
+ 8001528:	0800163b 	.word	0x0800163b
+ 800152c:	08001677 	.word	0x08001677
 	{
 	case DNMXP_idle:
 		if (dataIn == 0xFF) //data เข้ามาเป็น FF
  8001530:	f9b7 3008 	ldrsh.w	r3, [r7, #8]
  8001534:	2bff      	cmp	r3, #255	; 0xff
- 8001536:	f040 8245 	bne.w	80019c4 <DynamixelProtocal2+0x4e4>
+ 8001536:	f040 8247 	bne.w	80019c8 <DynamixelProtocal2+0x4e8>
 			State = DNMXP_1stHeader;
- 800153a:	4b88      	ldr	r3, [pc, #544]	; (800175c <DynamixelProtocal2+0x27c>)
+ 800153a:	4b89      	ldr	r3, [pc, #548]	; (8001760 <DynamixelProtocal2+0x280>)
  800153c:	2201      	movs	r2, #1
  800153e:	701a      	strb	r2, [r3, #0]
 		break;
- 8001540:	e240      	b.n	80019c4 <DynamixelProtocal2+0x4e4>
+ 8001540:	e242      	b.n	80019c8 <DynamixelProtocal2+0x4e8>
 	case DNMXP_1stHeader:
 		if (dataIn == 0xFF)
  8001542:	f9b7 3008 	ldrsh.w	r3, [r7, #8]
  8001546:	2bff      	cmp	r3, #255	; 0xff
- 8001548:	f040 823e 	bne.w	80019c8 <DynamixelProtocal2+0x4e8>
+ 8001548:	d103      	bne.n	8001552 <DynamixelProtocal2+0x72>
 			State = DNMXP_2ndHeader;
- 800154c:	4b83      	ldr	r3, [pc, #524]	; (800175c <DynamixelProtocal2+0x27c>)
- 800154e:	2202      	movs	r2, #2
- 8001550:	701a      	strb	r2, [r3, #0]
+ 800154a:	4b85      	ldr	r3, [pc, #532]	; (8001760 <DynamixelProtocal2+0x280>)
+ 800154c:	2202      	movs	r2, #2
+ 800154e:	701a      	strb	r2, [r3, #0]
+		else
+			State = DNMXP_idle;
 		break;
- 8001552:	e239      	b.n	80019c8 <DynamixelProtocal2+0x4e8>
+ 8001550:	e23d      	b.n	80019ce <DynamixelProtocal2+0x4ee>
+			State = DNMXP_idle;
+ 8001552:	4b83      	ldr	r3, [pc, #524]	; (8001760 <DynamixelProtocal2+0x280>)
+ 8001554:	2200      	movs	r2, #0
+ 8001556:	701a      	strb	r2, [r3, #0]
+		break;
+ 8001558:	e239      	b.n	80019ce <DynamixelProtocal2+0x4ee>
 	case DNMXP_2ndHeader:
 		if (dataIn == 0xFD)
- 8001554:	f9b7 3008 	ldrsh.w	r3, [r7, #8]
- 8001558:	2bfd      	cmp	r3, #253	; 0xfd
- 800155a:	d103      	bne.n	8001564 <DynamixelProtocal2+0x84>
+ 800155a:	f9b7 3008 	ldrsh.w	r3, [r7, #8]
+ 800155e:	2bfd      	cmp	r3, #253	; 0xfd
+ 8001560:	d103      	bne.n	800156a <DynamixelProtocal2+0x8a>
 			State = DNMXP_3rdHeader;
- 800155c:	4b7f      	ldr	r3, [pc, #508]	; (800175c <DynamixelProtocal2+0x27c>)
- 800155e:	2203      	movs	r2, #3
- 8001560:	701a      	strb	r2, [r3, #0]
+ 8001562:	4b7f      	ldr	r3, [pc, #508]	; (8001760 <DynamixelProtocal2+0x280>)
+ 8001564:	2203      	movs	r2, #3
+ 8001566:	701a      	strb	r2, [r3, #0]
 		else if (dataIn == 0xFF)
 			; //do nothing
 		else
 			State = DNMXP_idle;
 		break;
- 8001562:	e233      	b.n	80019cc <DynamixelProtocal2+0x4ec>
+ 8001568:	e230      	b.n	80019cc <DynamixelProtocal2+0x4ec>
 		else if (dataIn == 0xFF)
- 8001564:	f9b7 3008 	ldrsh.w	r3, [r7, #8]
- 8001568:	2bff      	cmp	r3, #255	; 0xff
- 800156a:	f000 822f 	beq.w	80019cc <DynamixelProtocal2+0x4ec>
+ 800156a:	f9b7 3008 	ldrsh.w	r3, [r7, #8]
+ 800156e:	2bff      	cmp	r3, #255	; 0xff
+ 8001570:	f000 822c 	beq.w	80019cc <DynamixelProtocal2+0x4ec>
 			State = DNMXP_idle;
- 800156e:	4b7b      	ldr	r3, [pc, #492]	; (800175c <DynamixelProtocal2+0x27c>)
- 8001570:	2200      	movs	r2, #0
- 8001572:	701a      	strb	r2, [r3, #0]
+ 8001574:	4b7a      	ldr	r3, [pc, #488]	; (8001760 <DynamixelProtocal2+0x280>)
+ 8001576:	2200      	movs	r2, #0
+ 8001578:	701a      	strb	r2, [r3, #0]
 		break;
- 8001574:	e22a      	b.n	80019cc <DynamixelProtocal2+0x4ec>
+ 800157a:	e227      	b.n	80019cc <DynamixelProtocal2+0x4ec>
 	case DNMXP_3rdHeader:
 		if (dataIn == 0x00)
- 8001576:	f9b7 3008 	ldrsh.w	r3, [r7, #8]
- 800157a:	2b00      	cmp	r3, #0
- 800157c:	d103      	bne.n	8001586 <DynamixelProtocal2+0xa6>
+ 800157c:	f9b7 3008 	ldrsh.w	r3, [r7, #8]
+ 8001580:	2b00      	cmp	r3, #0
+ 8001582:	d103      	bne.n	800158c <DynamixelProtocal2+0xac>
 			State = DNMXP_Reserved;
- 800157e:	4b77      	ldr	r3, [pc, #476]	; (800175c <DynamixelProtocal2+0x27c>)
- 8001580:	2204      	movs	r2, #4
- 8001582:	701a      	strb	r2, [r3, #0]
+ 8001584:	4b76      	ldr	r3, [pc, #472]	; (8001760 <DynamixelProtocal2+0x280>)
+ 8001586:	2204      	movs	r2, #4
+ 8001588:	701a      	strb	r2, [r3, #0]
 		else
 			State = DNMXP_idle;
 		break;
- 8001584:	e223      	b.n	80019ce <DynamixelProtocal2+0x4ee>
+ 800158a:	e220      	b.n	80019ce <DynamixelProtocal2+0x4ee>
 			State = DNMXP_idle;
- 8001586:	4b75      	ldr	r3, [pc, #468]	; (800175c <DynamixelProtocal2+0x27c>)
- 8001588:	2200      	movs	r2, #0
- 800158a:	701a      	strb	r2, [r3, #0]
+ 800158c:	4b74      	ldr	r3, [pc, #464]	; (8001760 <DynamixelProtocal2+0x280>)
+ 800158e:	2200      	movs	r2, #0
+ 8001590:	701a      	strb	r2, [r3, #0]
 		break;
- 800158c:	e21f      	b.n	80019ce <DynamixelProtocal2+0x4ee>
-	case DNMXP_Reserved: //ID motor
-		if ((dataIn == MotorID) | (dataIn == 0xFE))
- 800158e:	f9b7 2008 	ldrsh.w	r2, [r7, #8]
- 8001592:	7afb      	ldrb	r3, [r7, #11]
- 8001594:	429a      	cmp	r2, r3
- 8001596:	bf0c      	ite	eq
- 8001598:	2301      	moveq	r3, #1
- 800159a:	2300      	movne	r3, #0
- 800159c:	b2da      	uxtb	r2, r3
- 800159e:	f9b7 3008 	ldrsh.w	r3, [r7, #8]
- 80015a2:	2bfe      	cmp	r3, #254	; 0xfe
- 80015a4:	bf0c      	ite	eq
- 80015a6:	2301      	moveq	r3, #1
- 80015a8:	2300      	movne	r3, #0
- 80015aa:	b2db      	uxtb	r3, r3
- 80015ac:	4313      	orrs	r3, r2
- 80015ae:	b2db      	uxtb	r3, r3
- 80015b0:	2b00      	cmp	r3, #0
- 80015b2:	d003      	beq.n	80015bc <DynamixelProtocal2+0xdc>
+ 8001592:	e21c      	b.n	80019ce <DynamixelProtocal2+0x4ee>
+	case DNMXP_Reserved: //check ID motor
+		//วิธีนี้ดีคือ switch case ไม่วิ่งไปไกล แต่ข้อเสียอาจทำให้ เกิดการผิดพลาดของการเรียง switch case
+		if ((dataIn == MotorID) | (dataIn == 0xFE)) //broadcast ID = 0xFE ID สำหรับการกระจายให้กับ dynamixel หลายๆตัว
+ 8001594:	f9b7 2008 	ldrsh.w	r2, [r7, #8]
+ 8001598:	7afb      	ldrb	r3, [r7, #11]
+ 800159a:	429a      	cmp	r2, r3
+ 800159c:	bf0c      	ite	eq
+ 800159e:	2301      	moveq	r3, #1
+ 80015a0:	2300      	movne	r3, #0
+ 80015a2:	b2da      	uxtb	r2, r3
+ 80015a4:	f9b7 3008 	ldrsh.w	r3, [r7, #8]
+ 80015a8:	2bfe      	cmp	r3, #254	; 0xfe
+ 80015aa:	bf0c      	ite	eq
+ 80015ac:	2301      	moveq	r3, #1
+ 80015ae:	2300      	movne	r3, #0
+ 80015b0:	b2db      	uxtb	r3, r3
+ 80015b2:	4313      	orrs	r3, r2
+ 80015b4:	b2db      	uxtb	r3, r3
+ 80015b6:	2b00      	cmp	r3, #0
+ 80015b8:	d003      	beq.n	80015c2 <DynamixelProtocal2+0xe2>
 			State = DNMXP_ID;
- 80015b4:	4b69      	ldr	r3, [pc, #420]	; (800175c <DynamixelProtocal2+0x27c>)
- 80015b6:	2205      	movs	r2, #5
- 80015b8:	701a      	strb	r2, [r3, #0]
+ 80015ba:	4b69      	ldr	r3, [pc, #420]	; (8001760 <DynamixelProtocal2+0x280>)
+ 80015bc:	2205      	movs	r2, #5
+ 80015be:	701a      	strb	r2, [r3, #0]
 		else
 			State = DNMXP_idle; //ID ไม่ตรง
 		break;
- 80015ba:	e208      	b.n	80019ce <DynamixelProtocal2+0x4ee>
+ 80015c0:	e205      	b.n	80019ce <DynamixelProtocal2+0x4ee>
 			State = DNMXP_idle; //ID ไม่ตรง
- 80015bc:	4b67      	ldr	r3, [pc, #412]	; (800175c <DynamixelProtocal2+0x27c>)
- 80015be:	2200      	movs	r2, #0
- 80015c0:	701a      	strb	r2, [r3, #0]
+ 80015c2:	4b67      	ldr	r3, [pc, #412]	; (8001760 <DynamixelProtocal2+0x280>)
+ 80015c4:	2200      	movs	r2, #0
+ 80015c6:	701a      	strb	r2, [r3, #0]
 		break;
- 80015c2:	e204      	b.n	80019ce <DynamixelProtocal2+0x4ee>
+ 80015c8:	e201      	b.n	80019ce <DynamixelProtocal2+0x4ee>
 	case DNMXP_ID:
-		datalen = dataIn & 0xFF;
- 80015c4:	893b      	ldrh	r3, [r7, #8]
- 80015c6:	b2db      	uxtb	r3, r3
- 80015c8:	b29a      	uxth	r2, r3
- 80015ca:	4b65      	ldr	r3, [pc, #404]	; (8001760 <DynamixelProtocal2+0x280>)
- 80015cc:	801a      	strh	r2, [r3, #0]
+		datalen = dataIn & 0xFF; //data len low
+ 80015ca:	893b      	ldrh	r3, [r7, #8]
+ 80015cc:	b2db      	uxtb	r3, r3
+ 80015ce:	b29a      	uxth	r2, r3
+ 80015d0:	4b64      	ldr	r3, [pc, #400]	; (8001764 <DynamixelProtocal2+0x284>)
+ 80015d2:	801a      	strh	r2, [r3, #0]
 		State = DNMXP_LEN1;
- 80015ce:	4b63      	ldr	r3, [pc, #396]	; (800175c <DynamixelProtocal2+0x27c>)
- 80015d0:	2206      	movs	r2, #6
- 80015d2:	701a      	strb	r2, [r3, #0]
+ 80015d4:	4b62      	ldr	r3, [pc, #392]	; (8001760 <DynamixelProtocal2+0x280>)
+ 80015d6:	2206      	movs	r2, #6
+ 80015d8:	701a      	strb	r2, [r3, #0]
 		break;
- 80015d4:	e1fb      	b.n	80019ce <DynamixelProtocal2+0x4ee>
+ 80015da:	e1f8      	b.n	80019ce <DynamixelProtocal2+0x4ee>
 	case DNMXP_LEN1:
-		datalen |= (dataIn & 0xFF) << 8;
- 80015d6:	893b      	ldrh	r3, [r7, #8]
- 80015d8:	021b      	lsls	r3, r3, #8
- 80015da:	b21a      	sxth	r2, r3
- 80015dc:	4b60      	ldr	r3, [pc, #384]	; (8001760 <DynamixelProtocal2+0x280>)
- 80015de:	881b      	ldrh	r3, [r3, #0]
- 80015e0:	b21b      	sxth	r3, r3
- 80015e2:	4313      	orrs	r3, r2
- 80015e4:	b21b      	sxth	r3, r3
- 80015e6:	b29a      	uxth	r2, r3
- 80015e8:	4b5d      	ldr	r3, [pc, #372]	; (8001760 <DynamixelProtocal2+0x280>)
- 80015ea:	801a      	strh	r2, [r3, #0]
+		datalen |= (dataIn & 0xFF) << 8; //data len high
+ 80015dc:	893b      	ldrh	r3, [r7, #8]
+ 80015de:	021b      	lsls	r3, r3, #8
+ 80015e0:	b21a      	sxth	r2, r3
+ 80015e2:	4b60      	ldr	r3, [pc, #384]	; (8001764 <DynamixelProtocal2+0x284>)
+ 80015e4:	881b      	ldrh	r3, [r3, #0]
+ 80015e6:	b21b      	sxth	r3, r3
+ 80015e8:	4313      	orrs	r3, r2
+ 80015ea:	b21b      	sxth	r3, r3
+ 80015ec:	b29a      	uxth	r2, r3
+ 80015ee:	4b5d      	ldr	r3, [pc, #372]	; (8001764 <DynamixelProtocal2+0x284>)
+ 80015f0:	801a      	strh	r2, [r3, #0]
 		State = DNMXP_LEN2;
- 80015ec:	4b5b      	ldr	r3, [pc, #364]	; (800175c <DynamixelProtocal2+0x27c>)
- 80015ee:	2207      	movs	r2, #7
- 80015f0:	701a      	strb	r2, [r3, #0]
+ 80015f2:	4b5b      	ldr	r3, [pc, #364]	; (8001760 <DynamixelProtocal2+0x280>)
+ 80015f4:	2207      	movs	r2, #7
+ 80015f6:	701a      	strb	r2, [r3, #0]
 		break;
- 80015f2:	e1ec      	b.n	80019ce <DynamixelProtocal2+0x4ee>
+ 80015f8:	e1e9      	b.n	80019ce <DynamixelProtocal2+0x4ee>
 	case DNMXP_LEN2:
-		inst = dataIn;
- 80015f4:	893b      	ldrh	r3, [r7, #8]
- 80015f6:	b2da      	uxtb	r2, r3
- 80015f8:	4b5a      	ldr	r3, [pc, #360]	; (8001764 <DynamixelProtocal2+0x284>)
- 80015fa:	701a      	strb	r2, [r3, #0]
-		State = DNMXP_Inst;
- 80015fc:	4b57      	ldr	r3, [pc, #348]	; (800175c <DynamixelProtocal2+0x27c>)
- 80015fe:	2208      	movs	r2, #8
+		inst = dataIn; //keep instruction
+ 80015fa:	893b      	ldrh	r3, [r7, #8]
+ 80015fc:	b2da      	uxtb	r2, r3
+ 80015fe:	4b5a      	ldr	r3, [pc, #360]	; (8001768 <DynamixelProtocal2+0x288>)
  8001600:	701a      	strb	r2, [r3, #0]
+		State = DNMXP_Inst;
+ 8001602:	4b57      	ldr	r3, [pc, #348]	; (8001760 <DynamixelProtocal2+0x280>)
+ 8001604:	2208      	movs	r2, #8
+ 8001606:	701a      	strb	r2, [r3, #0]
 		break;
- 8001602:	e1e4      	b.n	80019ce <DynamixelProtocal2+0x4ee>
+ 8001608:	e1e1      	b.n	80019ce <DynamixelProtocal2+0x4ee>
 	case DNMXP_Inst:
 		//3 = crc1+crc2+inst
+		//ความยาวของ parameter ทั้งหมด + 3 =datalen
 		if (datalen > 3) //len >3 คือมี parameter ให้เก็บ
- 8001604:	4b56      	ldr	r3, [pc, #344]	; (8001760 <DynamixelProtocal2+0x280>)
- 8001606:	881b      	ldrh	r3, [r3, #0]
- 8001608:	2b03      	cmp	r3, #3
- 800160a:	d90a      	bls.n	8001622 <DynamixelProtocal2+0x142>
+ 800160a:	4b56      	ldr	r3, [pc, #344]	; (8001764 <DynamixelProtocal2+0x284>)
+ 800160c:	881b      	ldrh	r3, [r3, #0]
+ 800160e:	2b03      	cmp	r3, #3
+ 8001610:	d90a      	bls.n	8001628 <DynamixelProtocal2+0x148>
 		{
-			parameter[0] = dataIn;
- 800160c:	893b      	ldrh	r3, [r7, #8]
- 800160e:	b2da      	uxtb	r2, r3
- 8001610:	4b55      	ldr	r3, [pc, #340]	; (8001768 <DynamixelProtocal2+0x288>)
- 8001612:	701a      	strb	r2, [r3, #0]
+			parameter[0] = dataIn; //first parameter
+ 8001612:	893b      	ldrh	r3, [r7, #8]
+ 8001614:	b2da      	uxtb	r2, r3
+ 8001616:	4b55      	ldr	r3, [pc, #340]	; (800176c <DynamixelProtocal2+0x28c>)
+ 8001618:	701a      	strb	r2, [r3, #0]
 			CollectedData = 1; //inst 1 + para[0] 1
- 8001614:	4b55      	ldr	r3, [pc, #340]	; (800176c <DynamixelProtocal2+0x28c>)
- 8001616:	2201      	movs	r2, #1
- 8001618:	801a      	strh	r2, [r3, #0]
+ 800161a:	4b55      	ldr	r3, [pc, #340]	; (8001770 <DynamixelProtocal2+0x290>)
+ 800161c:	2201      	movs	r2, #1
+ 800161e:	801a      	strh	r2, [r3, #0]
 			State = DNMXP_ParameterCollect;
- 800161a:	4b50      	ldr	r3, [pc, #320]	; (800175c <DynamixelProtocal2+0x27c>)
- 800161c:	2209      	movs	r2, #9
- 800161e:	701a      	strb	r2, [r3, #0]
+ 8001620:	4b4f      	ldr	r3, [pc, #316]	; (8001760 <DynamixelProtocal2+0x280>)
+ 8001622:	2209      	movs	r2, #9
+ 8001624:	701a      	strb	r2, [r3, #0]
 		{
 			CRCCheck = dataIn & 0xff;
-			State = DNMXP_CRCAndExecute;
+			State = DNMXP_CRCAndExecute; //check crc
 		}
 
 		break;
- 8001620:	e1d5      	b.n	80019ce <DynamixelProtocal2+0x4ee>
+ 8001626:	e1d2      	b.n	80019ce <DynamixelProtocal2+0x4ee>
 			CRCCheck = dataIn & 0xff;
- 8001622:	893b      	ldrh	r3, [r7, #8]
- 8001624:	b2db      	uxtb	r3, r3
- 8001626:	b29a      	uxth	r2, r3
- 8001628:	4b51      	ldr	r3, [pc, #324]	; (8001770 <DynamixelProtocal2+0x290>)
- 800162a:	801a      	strh	r2, [r3, #0]
-			State = DNMXP_CRCAndExecute;
- 800162c:	4b4b      	ldr	r3, [pc, #300]	; (800175c <DynamixelProtocal2+0x27c>)
- 800162e:	220a      	movs	r2, #10
- 8001630:	701a      	strb	r2, [r3, #0]
+ 8001628:	893b      	ldrh	r3, [r7, #8]
+ 800162a:	b2db      	uxtb	r3, r3
+ 800162c:	b29a      	uxth	r2, r3
+ 800162e:	4b51      	ldr	r3, [pc, #324]	; (8001774 <DynamixelProtocal2+0x294>)
+ 8001630:	801a      	strh	r2, [r3, #0]
+			State = DNMXP_CRCAndExecute; //check crc
+ 8001632:	4b4b      	ldr	r3, [pc, #300]	; (8001760 <DynamixelProtocal2+0x280>)
+ 8001634:	220a      	movs	r2, #10
+ 8001636:	701a      	strb	r2, [r3, #0]
 		break;
- 8001632:	e1cc      	b.n	80019ce <DynamixelProtocal2+0x4ee>
+ 8001638:	e1c9      	b.n	80019ce <DynamixelProtocal2+0x4ee>
 	case DNMXP_ParameterCollect:
-
+		//เก็บครบทุก parameer
 		if (datalen-3 > CollectedData)
- 8001634:	4b4a      	ldr	r3, [pc, #296]	; (8001760 <DynamixelProtocal2+0x280>)
- 8001636:	881b      	ldrh	r3, [r3, #0]
- 8001638:	3b03      	subs	r3, #3
- 800163a:	4a4c      	ldr	r2, [pc, #304]	; (800176c <DynamixelProtocal2+0x28c>)
- 800163c:	8812      	ldrh	r2, [r2, #0]
- 800163e:	4293      	cmp	r3, r2
- 8001640:	dd0d      	ble.n	800165e <DynamixelProtocal2+0x17e>
+ 800163a:	4b4a      	ldr	r3, [pc, #296]	; (8001764 <DynamixelProtocal2+0x284>)
+ 800163c:	881b      	ldrh	r3, [r3, #0]
+ 800163e:	3b03      	subs	r3, #3
+ 8001640:	4a4b      	ldr	r2, [pc, #300]	; (8001770 <DynamixelProtocal2+0x290>)
+ 8001642:	8812      	ldrh	r2, [r2, #0]
+ 8001644:	4293      	cmp	r3, r2
+ 8001646:	dd0d      	ble.n	8001664 <DynamixelProtocal2+0x184>
 		{
 			parameter[CollectedData] = dataIn;
- 8001642:	4b4a      	ldr	r3, [pc, #296]	; (800176c <DynamixelProtocal2+0x28c>)
- 8001644:	881b      	ldrh	r3, [r3, #0]
- 8001646:	461a      	mov	r2, r3
- 8001648:	893b      	ldrh	r3, [r7, #8]
- 800164a:	b2d9      	uxtb	r1, r3
- 800164c:	4b46      	ldr	r3, [pc, #280]	; (8001768 <DynamixelProtocal2+0x288>)
- 800164e:	5499      	strb	r1, [r3, r2]
+ 8001648:	4b49      	ldr	r3, [pc, #292]	; (8001770 <DynamixelProtocal2+0x290>)
+ 800164a:	881b      	ldrh	r3, [r3, #0]
+ 800164c:	461a      	mov	r2, r3
+ 800164e:	893b      	ldrh	r3, [r7, #8]
+ 8001650:	b2d9      	uxtb	r1, r3
+ 8001652:	4b46      	ldr	r3, [pc, #280]	; (800176c <DynamixelProtocal2+0x28c>)
+ 8001654:	5499      	strb	r1, [r3, r2]
 			CollectedData++;
- 8001650:	4b46      	ldr	r3, [pc, #280]	; (800176c <DynamixelProtocal2+0x28c>)
- 8001652:	881b      	ldrh	r3, [r3, #0]
- 8001654:	3301      	adds	r3, #1
- 8001656:	b29a      	uxth	r2, r3
- 8001658:	4b44      	ldr	r3, [pc, #272]	; (800176c <DynamixelProtocal2+0x28c>)
- 800165a:	801a      	strh	r2, [r3, #0]
+ 8001656:	4b46      	ldr	r3, [pc, #280]	; (8001770 <DynamixelProtocal2+0x290>)
+ 8001658:	881b      	ldrh	r3, [r3, #0]
+ 800165a:	3301      	adds	r3, #1
+ 800165c:	b29a      	uxth	r2, r3
+ 800165e:	4b44      	ldr	r3, [pc, #272]	; (8001770 <DynamixelProtocal2+0x290>)
+ 8001660:	801a      	strh	r2, [r3, #0]
 		else
 		{
-			CRCCheck = dataIn & 0xff;
+			CRCCheck = dataIn & 0xff; //crc low
 			State = DNMXP_CRCAndExecute;
 		}
 		break;
- 800165c:	e1b7      	b.n	80019ce <DynamixelProtocal2+0x4ee>
-			CRCCheck = dataIn & 0xff;
- 800165e:	893b      	ldrh	r3, [r7, #8]
- 8001660:	b2db      	uxtb	r3, r3
- 8001662:	b29a      	uxth	r2, r3
- 8001664:	4b42      	ldr	r3, [pc, #264]	; (8001770 <DynamixelProtocal2+0x290>)
- 8001666:	801a      	strh	r2, [r3, #0]
+ 8001662:	e1b4      	b.n	80019ce <DynamixelProtocal2+0x4ee>
+			CRCCheck = dataIn & 0xff; //crc low
+ 8001664:	893b      	ldrh	r3, [r7, #8]
+ 8001666:	b2db      	uxtb	r3, r3
+ 8001668:	b29a      	uxth	r2, r3
+ 800166a:	4b42      	ldr	r3, [pc, #264]	; (8001774 <DynamixelProtocal2+0x294>)
+ 800166c:	801a      	strh	r2, [r3, #0]
 			State = DNMXP_CRCAndExecute;
- 8001668:	4b3c      	ldr	r3, [pc, #240]	; (800175c <DynamixelProtocal2+0x27c>)
- 800166a:	220a      	movs	r2, #10
- 800166c:	701a      	strb	r2, [r3, #0]
+ 800166e:	4b3c      	ldr	r3, [pc, #240]	; (8001760 <DynamixelProtocal2+0x280>)
+ 8001670:	220a      	movs	r2, #10
+ 8001672:	701a      	strb	r2, [r3, #0]
 		break;
- 800166e:	e1ae      	b.n	80019ce <DynamixelProtocal2+0x4ee>
+ 8001674:	e1ab      	b.n	80019ce <DynamixelProtocal2+0x4ee>
 	case DNMXP_CRCAndExecute: //crc ที่รับได้และที่มีตรงกนไหม
-		CRCCheck |= (dataIn & 0xff) << 8; //รับcrc ตัวสุดท้าย
- 8001670:	893b      	ldrh	r3, [r7, #8]
- 8001672:	021b      	lsls	r3, r3, #8
- 8001674:	b21a      	sxth	r2, r3
- 8001676:	4b3e      	ldr	r3, [pc, #248]	; (8001770 <DynamixelProtocal2+0x290>)
- 8001678:	881b      	ldrh	r3, [r3, #0]
- 800167a:	b21b      	sxth	r3, r3
- 800167c:	4313      	orrs	r3, r2
- 800167e:	b21b      	sxth	r3, r3
- 8001680:	b29a      	uxth	r2, r3
- 8001682:	4b3b      	ldr	r3, [pc, #236]	; (8001770 <DynamixelProtocal2+0x290>)
- 8001684:	801a      	strh	r2, [r3, #0]
+		CRCCheck |= (dataIn & 0xff) << 8; //รับcrc ตัวสุดท้าย //crc high
+ 8001676:	893b      	ldrh	r3, [r7, #8]
+ 8001678:	021b      	lsls	r3, r3, #8
+ 800167a:	b21a      	sxth	r2, r3
+ 800167c:	4b3d      	ldr	r3, [pc, #244]	; (8001774 <DynamixelProtocal2+0x294>)
+ 800167e:	881b      	ldrh	r3, [r3, #0]
+ 8001680:	b21b      	sxth	r3, r3
+ 8001682:	4313      	orrs	r3, r2
+ 8001684:	b21b      	sxth	r3, r3
+ 8001686:	b29a      	uxth	r2, r3
+ 8001688:	4b3a      	ldr	r3, [pc, #232]	; (8001774 <DynamixelProtocal2+0x294>)
+ 800168a:	801a      	strh	r2, [r3, #0]
 		//Check CRC
 		CRC_accum = 0;
- 8001686:	4b3b      	ldr	r3, [pc, #236]	; (8001774 <DynamixelProtocal2+0x294>)
- 8001688:	2200      	movs	r2, #0
- 800168a:	801a      	strh	r2, [r3, #0]
-		packetSize = datalen + 7;
- 800168c:	4b34      	ldr	r3, [pc, #208]	; (8001760 <DynamixelProtocal2+0x280>)
- 800168e:	881b      	ldrh	r3, [r3, #0]
- 8001690:	3307      	adds	r3, #7
- 8001692:	b29a      	uxth	r2, r3
- 8001694:	4b38      	ldr	r3, [pc, #224]	; (8001778 <DynamixelProtocal2+0x298>)
- 8001696:	801a      	strh	r2, [r3, #0]
+ 800168c:	4b3a      	ldr	r3, [pc, #232]	; (8001778 <DynamixelProtocal2+0x298>)
+ 800168e:	2200      	movs	r2, #0
+ 8001690:	801a      	strh	r2, [r3, #0]
+		packetSize = datalen + 7; //H1 H2 H3 rsv ID CRC1 CRC2
+ 8001692:	4b34      	ldr	r3, [pc, #208]	; (8001764 <DynamixelProtocal2+0x284>)
+ 8001694:	881b      	ldrh	r3, [r3, #0]
+ 8001696:	3307      	adds	r3, #7
+ 8001698:	b29a      	uxth	r2, r3
+ 800169a:	4b38      	ldr	r3, [pc, #224]	; (800177c <DynamixelProtocal2+0x29c>)
+ 800169c:	801a      	strh	r2, [r3, #0]
 		//check overlapse buffer
-		if (uart->RxTail - packetSize >= 0) //not overlapse
- 8001698:	687b      	ldr	r3, [r7, #4]
- 800169a:	8a9b      	ldrh	r3, [r3, #20]
- 800169c:	461a      	mov	r2, r3
- 800169e:	4b36      	ldr	r3, [pc, #216]	; (8001778 <DynamixelProtocal2+0x298>)
- 80016a0:	881b      	ldrh	r3, [r3, #0]
- 80016a2:	1ad3      	subs	r3, r2, r3
- 80016a4:	2b00      	cmp	r3, #0
- 80016a6:	db16      	blt.n	80016d6 <DynamixelProtocal2+0x1f6>
+		if (uart->RxTail - packetSize >= 0) //not overlapse //packgage ไม่ถูกตัดตอน
+ 800169e:	687b      	ldr	r3, [r7, #4]
+ 80016a0:	8a9b      	ldrh	r3, [r3, #20]
+ 80016a2:	461a      	mov	r2, r3
+ 80016a4:	4b35      	ldr	r3, [pc, #212]	; (800177c <DynamixelProtocal2+0x29c>)
+ 80016a6:	881b      	ldrh	r3, [r3, #0]
+ 80016a8:	1ad3      	subs	r3, r2, r3
+ 80016aa:	2b00      	cmp	r3, #0
+ 80016ac:	db16      	blt.n	80016dc <DynamixelProtocal2+0x1fc>
 		{
 			//add data crc
 			//ข้อมูลที่รับเข้ามาทั้งหมดใส่ crc
+			//data keep in ring buffer of uart
+			//tail ตำแหน่ง array
 			CRC_accum = update_crc(CRC_accum,
- 80016a8:	4b32      	ldr	r3, [pc, #200]	; (8001774 <DynamixelProtocal2+0x294>)
- 80016aa:	8818      	ldrh	r0, [r3, #0]
+ 80016ae:	4b32      	ldr	r3, [pc, #200]	; (8001778 <DynamixelProtocal2+0x298>)
+ 80016b0:	8818      	ldrh	r0, [r3, #0]
 					&(uart->RxBuffer[uart->RxTail - packetSize]), //ตำแหน่งปัจจุบัน - packgage = อ่านข้อมูลย้อนหลังตาม buffer รับข้อมูลทั้งหมด
- 80016ac:	687b      	ldr	r3, [r7, #4]
- 80016ae:	691b      	ldr	r3, [r3, #16]
- 80016b0:	687a      	ldr	r2, [r7, #4]
- 80016b2:	8a92      	ldrh	r2, [r2, #20]
- 80016b4:	4611      	mov	r1, r2
- 80016b6:	4a30      	ldr	r2, [pc, #192]	; (8001778 <DynamixelProtocal2+0x298>)
- 80016b8:	8812      	ldrh	r2, [r2, #0]
- 80016ba:	1a8a      	subs	r2, r1, r2
- 80016bc:	1899      	adds	r1, r3, r2
+ 80016b2:	687b      	ldr	r3, [r7, #4]
+ 80016b4:	691b      	ldr	r3, [r3, #16]
+ 80016b6:	687a      	ldr	r2, [r7, #4]
+ 80016b8:	8a92      	ldrh	r2, [r2, #20]
+ 80016ba:	4611      	mov	r1, r2
+ 80016bc:	4a2f      	ldr	r2, [pc, #188]	; (800177c <DynamixelProtocal2+0x29c>)
+ 80016be:	8812      	ldrh	r2, [r2, #0]
+ 80016c0:	1a8a      	subs	r2, r1, r2
+ 80016c2:	1899      	adds	r1, r3, r2
 			CRC_accum = update_crc(CRC_accum,
- 80016be:	4b2e      	ldr	r3, [pc, #184]	; (8001778 <DynamixelProtocal2+0x298>)
- 80016c0:	881b      	ldrh	r3, [r3, #0]
- 80016c2:	3b02      	subs	r3, #2
- 80016c4:	b29b      	uxth	r3, r3
- 80016c6:	461a      	mov	r2, r3
- 80016c8:	f000 f998 	bl	80019fc <update_crc>
- 80016cc:	4603      	mov	r3, r0
- 80016ce:	461a      	mov	r2, r3
- 80016d0:	4b28      	ldr	r3, [pc, #160]	; (8001774 <DynamixelProtocal2+0x294>)
- 80016d2:	801a      	strh	r2, [r3, #0]
- 80016d4:	e02d      	b.n	8001732 <DynamixelProtocal2+0x252>
+ 80016c4:	4b2d      	ldr	r3, [pc, #180]	; (800177c <DynamixelProtocal2+0x29c>)
+ 80016c6:	881b      	ldrh	r3, [r3, #0]
+ 80016c8:	3b02      	subs	r3, #2
+ 80016ca:	b29b      	uxth	r3, r3
+ 80016cc:	461a      	mov	r2, r3
+ 80016ce:	f000 f995 	bl	80019fc <update_crc>
+ 80016d2:	4603      	mov	r3, r0
+ 80016d4:	461a      	mov	r2, r3
+ 80016d6:	4b28      	ldr	r3, [pc, #160]	; (8001778 <DynamixelProtocal2+0x298>)
+ 80016d8:	801a      	strh	r2, [r3, #0]
+ 80016da:	e02d      	b.n	8001738 <DynamixelProtocal2+0x258>
 					packetSize - 2);
 		}
 		else//overlapse //overflow
 			//มีโอกาสที่packgage ถูกตัดไปเริ่มต้นที่ตำแหน่ง 0
 		{
 			uint16_t firstPartStart = uart->RxTail - packetSize + uart->RxLen;
- 80016d6:	687b      	ldr	r3, [r7, #4]
- 80016d8:	8a9a      	ldrh	r2, [r3, #20]
- 80016da:	4b27      	ldr	r3, [pc, #156]	; (8001778 <DynamixelProtocal2+0x298>)
- 80016dc:	881b      	ldrh	r3, [r3, #0]
- 80016de:	1ad3      	subs	r3, r2, r3
- 80016e0:	b29a      	uxth	r2, r3
- 80016e2:	687b      	ldr	r3, [r7, #4]
- 80016e4:	88db      	ldrh	r3, [r3, #6]
- 80016e6:	4413      	add	r3, r2
- 80016e8:	f8a7 306a 	strh.w	r3, [r7, #106]	; 0x6a
+ 80016dc:	687b      	ldr	r3, [r7, #4]
+ 80016de:	8a9a      	ldrh	r2, [r3, #20]
+ 80016e0:	4b26      	ldr	r3, [pc, #152]	; (800177c <DynamixelProtocal2+0x29c>)
+ 80016e2:	881b      	ldrh	r3, [r3, #0]
+ 80016e4:	1ad3      	subs	r3, r2, r3
+ 80016e6:	b29a      	uxth	r2, r3
+ 80016e8:	687b      	ldr	r3, [r7, #4]
+ 80016ea:	88db      	ldrh	r3, [r3, #6]
+ 80016ec:	4413      	add	r3, r2
+ 80016ee:	f8a7 306a 	strh.w	r3, [r7, #106]	; 0x6a
 			CRC_accum = update_crc(CRC_accum, &(uart->RxBuffer[firstPartStart]),
- 80016ec:	4b21      	ldr	r3, [pc, #132]	; (8001774 <DynamixelProtocal2+0x294>)
- 80016ee:	8818      	ldrh	r0, [r3, #0]
- 80016f0:	687b      	ldr	r3, [r7, #4]
- 80016f2:	691a      	ldr	r2, [r3, #16]
- 80016f4:	f8b7 306a 	ldrh.w	r3, [r7, #106]	; 0x6a
- 80016f8:	18d1      	adds	r1, r2, r3
+ 80016f2:	4b21      	ldr	r3, [pc, #132]	; (8001778 <DynamixelProtocal2+0x298>)
+ 80016f4:	8818      	ldrh	r0, [r3, #0]
+ 80016f6:	687b      	ldr	r3, [r7, #4]
+ 80016f8:	691a      	ldr	r2, [r3, #16]
+ 80016fa:	f8b7 306a 	ldrh.w	r3, [r7, #106]	; 0x6a
+ 80016fe:	18d1      	adds	r1, r2, r3
 					uart->RxLen - firstPartStart);
- 80016fa:	687b      	ldr	r3, [r7, #4]
- 80016fc:	88da      	ldrh	r2, [r3, #6]
+ 8001700:	687b      	ldr	r3, [r7, #4]
+ 8001702:	88da      	ldrh	r2, [r3, #6]
 			CRC_accum = update_crc(CRC_accum, &(uart->RxBuffer[firstPartStart]),
- 80016fe:	f8b7 306a 	ldrh.w	r3, [r7, #106]	; 0x6a
- 8001702:	1ad3      	subs	r3, r2, r3
- 8001704:	b29b      	uxth	r3, r3
- 8001706:	461a      	mov	r2, r3
- 8001708:	f000 f978 	bl	80019fc <update_crc>
- 800170c:	4603      	mov	r3, r0
- 800170e:	461a      	mov	r2, r3
- 8001710:	4b18      	ldr	r3, [pc, #96]	; (8001774 <DynamixelProtocal2+0x294>)
- 8001712:	801a      	strh	r2, [r3, #0]
+ 8001704:	f8b7 306a 	ldrh.w	r3, [r7, #106]	; 0x6a
+ 8001708:	1ad3      	subs	r3, r2, r3
+ 800170a:	b29b      	uxth	r3, r3
+ 800170c:	461a      	mov	r2, r3
+ 800170e:	f000 f975 	bl	80019fc <update_crc>
+ 8001712:	4603      	mov	r3, r0
+ 8001714:	461a      	mov	r2, r3
+ 8001716:	4b18      	ldr	r3, [pc, #96]	; (8001778 <DynamixelProtocal2+0x298>)
+ 8001718:	801a      	strh	r2, [r3, #0]
 			CRC_accum = update_crc(CRC_accum, uart->RxBuffer, uart->RxTail - 2);
- 8001714:	4b17      	ldr	r3, [pc, #92]	; (8001774 <DynamixelProtocal2+0x294>)
- 8001716:	8818      	ldrh	r0, [r3, #0]
- 8001718:	687b      	ldr	r3, [r7, #4]
- 800171a:	6919      	ldr	r1, [r3, #16]
- 800171c:	687b      	ldr	r3, [r7, #4]
- 800171e:	8a9b      	ldrh	r3, [r3, #20]
- 8001720:	3b02      	subs	r3, #2
- 8001722:	b29b      	uxth	r3, r3
- 8001724:	461a      	mov	r2, r3
- 8001726:	f000 f969 	bl	80019fc <update_crc>
- 800172a:	4603      	mov	r3, r0
- 800172c:	461a      	mov	r2, r3
- 800172e:	4b11      	ldr	r3, [pc, #68]	; (8001774 <DynamixelProtocal2+0x294>)
- 8001730:	801a      	strh	r2, [r3, #0]
+ 800171a:	4b17      	ldr	r3, [pc, #92]	; (8001778 <DynamixelProtocal2+0x298>)
+ 800171c:	8818      	ldrh	r0, [r3, #0]
+ 800171e:	687b      	ldr	r3, [r7, #4]
+ 8001720:	6919      	ldr	r1, [r3, #16]
+ 8001722:	687b      	ldr	r3, [r7, #4]
+ 8001724:	8a9b      	ldrh	r3, [r3, #20]
+ 8001726:	3b02      	subs	r3, #2
+ 8001728:	b29b      	uxth	r3, r3
+ 800172a:	461a      	mov	r2, r3
+ 800172c:	f000 f966 	bl	80019fc <update_crc>
+ 8001730:	4603      	mov	r3, r0
+ 8001732:	461a      	mov	r2, r3
+ 8001734:	4b10      	ldr	r3, [pc, #64]	; (8001778 <DynamixelProtocal2+0x298>)
+ 8001736:	801a      	strh	r2, [r3, #0]
 
 		}
 
 		if (CRC_accum == CRCCheck) //crc ที่คำนวน เท่ากับที่เก็บได้
- 8001732:	4b10      	ldr	r3, [pc, #64]	; (8001774 <DynamixelProtocal2+0x294>)
- 8001734:	881a      	ldrh	r2, [r3, #0]
- 8001736:	4b0e      	ldr	r3, [pc, #56]	; (8001770 <DynamixelProtocal2+0x290>)
- 8001738:	881b      	ldrh	r3, [r3, #0]
- 800173a:	429a      	cmp	r2, r3
- 800173c:	f040 8118 	bne.w	8001970 <DynamixelProtocal2+0x490>
+ 8001738:	4b0f      	ldr	r3, [pc, #60]	; (8001778 <DynamixelProtocal2+0x298>)
+ 800173a:	881a      	ldrh	r2, [r3, #0]
+ 800173c:	4b0d      	ldr	r3, [pc, #52]	; (8001774 <DynamixelProtocal2+0x294>)
+ 800173e:	881b      	ldrh	r3, [r3, #0]
+ 8001740:	429a      	cmp	r2, r3
+ 8001742:	f040 8117 	bne.w	8001974 <DynamixelProtocal2+0x494>
 		{ //ถ้าตรงกัน packgage is valid
 			//inst = instruction ตัวที่บอกว่า package นี้ต้องทำอะไร
 			switch (inst)
- 8001740:	4b08      	ldr	r3, [pc, #32]	; (8001764 <DynamixelProtocal2+0x284>)
- 8001742:	781b      	ldrb	r3, [r3, #0]
- 8001744:	2b03      	cmp	r3, #3
- 8001746:	f000 809f 	beq.w	8001888 <DynamixelProtocal2+0x3a8>
+ 8001746:	4b08      	ldr	r3, [pc, #32]	; (8001768 <DynamixelProtocal2+0x288>)
+ 8001748:	781b      	ldrb	r3, [r3, #0]
  800174a:	2b03      	cmp	r3, #3
- 800174c:	f300 80e6 	bgt.w	800191c <DynamixelProtocal2+0x43c>
- 8001750:	2b01      	cmp	r3, #1
- 8001752:	d013      	beq.n	800177c <DynamixelProtocal2+0x29c>
- 8001754:	2b02      	cmp	r3, #2
- 8001756:	d03b      	beq.n	80017d0 <DynamixelProtocal2+0x2f0>
- 8001758:	e0e0      	b.n	800191c <DynamixelProtocal2+0x43c>
- 800175a:	bf00      	nop
- 800175c:	20000314 	.word	0x20000314
- 8001760:	20000316 	.word	0x20000316
- 8001764:	20000318 	.word	0x20000318
- 8001768:	2000031c 	.word	0x2000031c
- 800176c:	2000041c 	.word	0x2000041c
- 8001770:	2000041e 	.word	0x2000041e
- 8001774:	20000420 	.word	0x20000420
- 8001778:	20000422 	.word	0x20000422
+ 800174c:	f000 809e 	beq.w	800188c <DynamixelProtocal2+0x3ac>
+ 8001750:	2b03      	cmp	r3, #3
+ 8001752:	f300 80e5 	bgt.w	8001920 <DynamixelProtocal2+0x440>
+ 8001756:	2b01      	cmp	r3, #1
+ 8001758:	d012      	beq.n	8001780 <DynamixelProtocal2+0x2a0>
+ 800175a:	2b02      	cmp	r3, #2
+ 800175c:	d03a      	beq.n	80017d4 <DynamixelProtocal2+0x2f4>
+ 800175e:	e0df      	b.n	8001920 <DynamixelProtocal2+0x440>
+ 8001760:	20000314 	.word	0x20000314
+ 8001764:	20000316 	.word	0x20000316
+ 8001768:	20000318 	.word	0x20000318
+ 800176c:	2000031c 	.word	0x2000031c
+ 8001770:	2000041c 	.word	0x2000041c
+ 8001774:	2000041e 	.word	0x2000041e
+ 8001778:	20000420 	.word	0x20000420
+ 800177c:	20000422 	.word	0x20000422
 			{
 			case 0x01:// ping
 			{
 				//create packet template
 				//H1 H2 H3 RSRV PACKET_ID LEN1 LEN2 INST ERR CRC1 CRC2
 				uint8_t temp[] =
- 800177c:	4a96      	ldr	r2, [pc, #600]	; (80019d8 <DynamixelProtocal2+0x4f8>)
- 800177e:	f107 034c 	add.w	r3, r7, #76	; 0x4c
- 8001782:	ca07      	ldmia	r2, {r0, r1, r2}
- 8001784:	c303      	stmia	r3!, {r0, r1}
- 8001786:	801a      	strh	r2, [r3, #0]
- 8001788:	3302      	adds	r3, #2
- 800178a:	0c12      	lsrs	r2, r2, #16
- 800178c:	701a      	strb	r2, [r3, #0]
+ 8001780:	4a95      	ldr	r2, [pc, #596]	; (80019d8 <DynamixelProtocal2+0x4f8>)
+ 8001782:	f107 034c 	add.w	r3, r7, #76	; 0x4c
+ 8001786:	ca07      	ldmia	r2, {r0, r1, r2}
+ 8001788:	c303      	stmia	r3!, {r0, r1}
+ 800178a:	801a      	strh	r2, [r3, #0]
+ 800178c:	3302      	adds	r3, #2
+ 800178e:	0c12      	lsrs	r2, r2, #16
+ 8001790:	701a      	strb	r2, [r3, #0]
 				{ 0xff, 0xff, 0xfd, 0x00, 0x00, 0x04, 0x00, 0x55, 0x00, 0x00,0x00 };
 				//config MotorID
 				temp[4] = MotorID;
- 800178e:	7afb      	ldrb	r3, [r7, #11]
- 8001790:	f887 3050 	strb.w	r3, [r7, #80]	; 0x50
+ 8001792:	7afb      	ldrb	r3, [r7, #11]
+ 8001794:	f887 3050 	strb.w	r3, [r7, #80]	; 0x50
 				//calcuate CRC สามารถคำนวนต่อเนื่องได้
 				uint16_t crc_calc = update_crc(0, temp, 9);
- 8001794:	f107 034c 	add.w	r3, r7, #76	; 0x4c
- 8001798:	2209      	movs	r2, #9
- 800179a:	4619      	mov	r1, r3
- 800179c:	2000      	movs	r0, #0
- 800179e:	f000 f92d 	bl	80019fc <update_crc>
- 80017a2:	4603      	mov	r3, r0
- 80017a4:	f8a7 305c 	strh.w	r3, [r7, #92]	; 0x5c
+ 8001798:	f107 034c 	add.w	r3, r7, #76	; 0x4c
+ 800179c:	2209      	movs	r2, #9
+ 800179e:	4619      	mov	r1, r3
+ 80017a0:	2000      	movs	r0, #0
+ 80017a2:	f000 f92b 	bl	80019fc <update_crc>
+ 80017a6:	4603      	mov	r3, r0
+ 80017a8:	f8a7 305c 	strh.w	r3, [r7, #92]	; 0x5c
 				temp[9] = crc_calc & 0xff;
- 80017a8:	f8b7 305c 	ldrh.w	r3, [r7, #92]	; 0x5c
- 80017ac:	b2db      	uxtb	r3, r3
- 80017ae:	f887 3055 	strb.w	r3, [r7, #85]	; 0x55
+ 80017ac:	f8b7 305c 	ldrh.w	r3, [r7, #92]	; 0x5c
+ 80017b0:	b2db      	uxtb	r3, r3
+ 80017b2:	f887 3055 	strb.w	r3, [r7, #85]	; 0x55
 				temp[10] = (crc_calc >> 8) & 0xFF;
- 80017b2:	f8b7 305c 	ldrh.w	r3, [r7, #92]	; 0x5c
- 80017b6:	0a1b      	lsrs	r3, r3, #8
- 80017b8:	b29b      	uxth	r3, r3
- 80017ba:	b2db      	uxtb	r3, r3
- 80017bc:	f887 3056 	strb.w	r3, [r7, #86]	; 0x56
+ 80017b6:	f8b7 305c 	ldrh.w	r3, [r7, #92]	; 0x5c
+ 80017ba:	0a1b      	lsrs	r3, r3, #8
+ 80017bc:	b29b      	uxth	r3, r3
+ 80017be:	b2db      	uxtb	r3, r3
+ 80017c0:	f887 3056 	strb.w	r3, [r7, #86]	; 0x56
 				//Sent Response Packet
 				UARTTxWrite(uart, temp, 11);
- 80017c0:	f107 034c 	add.w	r3, r7, #76	; 0x4c
- 80017c4:	220b      	movs	r2, #11
- 80017c6:	4619      	mov	r1, r3
- 80017c8:	6878      	ldr	r0, [r7, #4]
- 80017ca:	f7ff fe41 	bl	8001450 <UARTTxWrite>
+ 80017c4:	f107 034c 	add.w	r3, r7, #76	; 0x4c
+ 80017c8:	220b      	movs	r2, #11
+ 80017ca:	4619      	mov	r1, r3
+ 80017cc:	6878      	ldr	r0, [r7, #4]
+ 80017ce:	f7ff fe3f 	bl	8001450 <UARTTxWrite>
 				break;
- 80017ce:	e0f5      	b.n	80019bc <DynamixelProtocal2+0x4dc>
+ 80017d2:	e0f5      	b.n	80019c0 <DynamixelProtocal2+0x4e0>
 
 			case 0x02://READ
 			{
 				//ตำแหน่งที่ต้องการอ่าน
 				//parameter 0 + parameter 1
-				uint16_t startAddr = (parameter[0]&0xFF)|(parameter[1]<<8 &0xFF);
- 80017d0:	4b82      	ldr	r3, [pc, #520]	; (80019dc <DynamixelProtocal2+0x4fc>)
- 80017d2:	781b      	ldrb	r3, [r3, #0]
- 80017d4:	f8a7 3062 	strh.w	r3, [r7, #98]	; 0x62
+				uint16_t startAddr = (parameter[0]&0xFF)|(parameter[1]<<8 &0xFF); //low + high //0xFF filter 8 bit
+ 80017d4:	4b81      	ldr	r3, [pc, #516]	; (80019dc <DynamixelProtocal2+0x4fc>)
+ 80017d6:	781b      	ldrb	r3, [r3, #0]
+ 80017d8:	f8a7 3062 	strh.w	r3, [r7, #98]	; 0x62
 
 				//จำนวนช่อง array ที่ต้องการอ่าน
 				//parameter 3 + parameter 4
 				uint16_t numberOfDataToRead = (parameter[2]&0xFF)|(parameter[3]<<8 &0xFF);
- 80017d8:	4b80      	ldr	r3, [pc, #512]	; (80019dc <DynamixelProtocal2+0x4fc>)
- 80017da:	789b      	ldrb	r3, [r3, #2]
- 80017dc:	f8a7 3060 	strh.w	r3, [r7, #96]	; 0x60
+ 80017dc:	4b7f      	ldr	r3, [pc, #508]	; (80019dc <DynamixelProtocal2+0x4fc>)
+ 80017de:	789b      	ldrb	r3, [r3, #2]
+ 80017e0:	f8a7 3060 	strh.w	r3, [r7, #96]	; 0x60
 
 				//ex 0x84 0x00 0x04 0x00 = ตำแหน่ง 84 อ่านไป 4 ตัว
 
 				//packgage ตอบกลับ
 				//H1 H2 H3 RSRV PACKET_ID LEN1 LEN2 INST ERR
 				uint8_t temp[] = {0xff,0xff,0xfd,0x00,0x00,0x00,0x00,0x55,0x00};
- 80017e0:	4a7f      	ldr	r2, [pc, #508]	; (80019e0 <DynamixelProtocal2+0x500>)
- 80017e2:	f107 0340 	add.w	r3, r7, #64	; 0x40
- 80017e6:	ca07      	ldmia	r2, {r0, r1, r2}
- 80017e8:	c303      	stmia	r3!, {r0, r1}
- 80017ea:	701a      	strb	r2, [r3, #0]
+ 80017e4:	4a7e      	ldr	r2, [pc, #504]	; (80019e0 <DynamixelProtocal2+0x500>)
+ 80017e6:	f107 0340 	add.w	r3, r7, #64	; 0x40
+ 80017ea:	ca07      	ldmia	r2, {r0, r1, r2}
+ 80017ec:	c303      	stmia	r3!, {r0, r1}
+ 80017ee:	701a      	strb	r2, [r3, #0]
 				temp[4] = MotorID;
- 80017ec:	7afb      	ldrb	r3, [r7, #11]
- 80017ee:	f887 3044 	strb.w	r3, [r7, #68]	; 0x44
+ 80017f0:	7afb      	ldrb	r3, [r7, #11]
+ 80017f2:	f887 3044 	strb.w	r3, [r7, #68]	; 0x44
 
 				//จำนวนช่องที่ต้องการอ่าน
-				temp[5] = (numberOfDataToRead + 4) & 0xff ; // +inst+err+crc1+crc2
- 80017f2:	f8b7 3060 	ldrh.w	r3, [r7, #96]	; 0x60
- 80017f6:	b2db      	uxtb	r3, r3
- 80017f8:	3304      	adds	r3, #4
+				// +inst+err+crc1+crc2
+				temp[5] = (numberOfDataToRead + 4) & 0xff ; //len low
+ 80017f6:	f8b7 3060 	ldrh.w	r3, [r7, #96]	; 0x60
  80017fa:	b2db      	uxtb	r3, r3
- 80017fc:	f887 3045 	strb.w	r3, [r7, #69]	; 0x45
-				temp[6] = ((numberOfDataToRead + 4)>>8) & 0xff ;
- 8001800:	f8b7 3060 	ldrh.w	r3, [r7, #96]	; 0x60
- 8001804:	3304      	adds	r3, #4
- 8001806:	121b      	asrs	r3, r3, #8
- 8001808:	b2db      	uxtb	r3, r3
- 800180a:	f887 3046 	strb.w	r3, [r7, #70]	; 0x46
-				uint16_t crc_calc = update_crc(0, temp, 9);
- 800180e:	f107 0340 	add.w	r3, r7, #64	; 0x40
- 8001812:	2209      	movs	r2, #9
- 8001814:	4619      	mov	r1, r3
- 8001816:	2000      	movs	r0, #0
- 8001818:	f000 f8f0 	bl	80019fc <update_crc>
- 800181c:	4603      	mov	r3, r0
- 800181e:	f8a7 305e 	strh.w	r3, [r7, #94]	; 0x5e
-				crc_calc = update_crc(crc_calc ,&(Memory[startAddr]),numberOfDataToRead); //คำนวน crc ต่อ
- 8001822:	f8b7 3062 	ldrh.w	r3, [r7, #98]	; 0x62
- 8001826:	68fa      	ldr	r2, [r7, #12]
- 8001828:	18d1      	adds	r1, r2, r3
- 800182a:	f8b7 2060 	ldrh.w	r2, [r7, #96]	; 0x60
- 800182e:	f8b7 305e 	ldrh.w	r3, [r7, #94]	; 0x5e
- 8001832:	4618      	mov	r0, r3
- 8001834:	f000 f8e2 	bl	80019fc <update_crc>
- 8001838:	4603      	mov	r3, r0
- 800183a:	f8a7 305e 	strh.w	r3, [r7, #94]	; 0x5e
+ 80017fc:	3304      	adds	r3, #4
+ 80017fe:	b2db      	uxtb	r3, r3
+ 8001800:	f887 3045 	strb.w	r3, [r7, #69]	; 0x45
+				temp[6] = ((numberOfDataToRead + 4)>>8) & 0xff ; //len high
+ 8001804:	f8b7 3060 	ldrh.w	r3, [r7, #96]	; 0x60
+ 8001808:	3304      	adds	r3, #4
+ 800180a:	121b      	asrs	r3, r3, #8
+ 800180c:	b2db      	uxtb	r3, r3
+ 800180e:	f887 3046 	strb.w	r3, [r7, #70]	; 0x46
+				uint16_t crc_calc = update_crc(0, temp, 9); //crc H1-ERR
+ 8001812:	f107 0340 	add.w	r3, r7, #64	; 0x40
+ 8001816:	2209      	movs	r2, #9
+ 8001818:	4619      	mov	r1, r3
+ 800181a:	2000      	movs	r0, #0
+ 800181c:	f000 f8ee 	bl	80019fc <update_crc>
+ 8001820:	4603      	mov	r3, r0
+ 8001822:	f8a7 305e 	strh.w	r3, [r7, #94]	; 0x5e
+				crc_calc = update_crc(crc_calc ,&(Memory[startAddr]),numberOfDataToRead); //คำนวน crc ต่อ //parameter
+ 8001826:	f8b7 3062 	ldrh.w	r3, [r7, #98]	; 0x62
+ 800182a:	68fa      	ldr	r2, [r7, #12]
+ 800182c:	18d1      	adds	r1, r2, r3
+ 800182e:	f8b7 2060 	ldrh.w	r2, [r7, #96]	; 0x60
+ 8001832:	f8b7 305e 	ldrh.w	r3, [r7, #94]	; 0x5e
+ 8001836:	4618      	mov	r0, r3
+ 8001838:	f000 f8e0 	bl	80019fc <update_crc>
+ 800183c:	4603      	mov	r3, r0
+ 800183e:	f8a7 305e 	strh.w	r3, [r7, #94]	; 0x5e
 				uint8_t crctemp[2];
 				crctemp[0] = crc_calc&0xff;
- 800183e:	f8b7 305e 	ldrh.w	r3, [r7, #94]	; 0x5e
- 8001842:	b2db      	uxtb	r3, r3
- 8001844:	f887 303c 	strb.w	r3, [r7, #60]	; 0x3c
+ 8001842:	f8b7 305e 	ldrh.w	r3, [r7, #94]	; 0x5e
+ 8001846:	b2db      	uxtb	r3, r3
+ 8001848:	f887 303c 	strb.w	r3, [r7, #60]	; 0x3c
 				crctemp[1] = (crc_calc>>8)&0xff;
- 8001848:	f8b7 305e 	ldrh.w	r3, [r7, #94]	; 0x5e
- 800184c:	0a1b      	lsrs	r3, r3, #8
- 800184e:	b29b      	uxth	r3, r3
- 8001850:	b2db      	uxtb	r3, r3
- 8001852:	f887 303d 	strb.w	r3, [r7, #61]	; 0x3d
+ 800184c:	f8b7 305e 	ldrh.w	r3, [r7, #94]	; 0x5e
+ 8001850:	0a1b      	lsrs	r3, r3, #8
+ 8001852:	b29b      	uxth	r3, r3
+ 8001854:	b2db      	uxtb	r3, r3
+ 8001856:	f887 303d 	strb.w	r3, [r7, #61]	; 0x3d
 
 				//send temp
 				UARTTxWrite(uart, temp,9);
- 8001856:	f107 0340 	add.w	r3, r7, #64	; 0x40
- 800185a:	2209      	movs	r2, #9
- 800185c:	4619      	mov	r1, r3
- 800185e:	6878      	ldr	r0, [r7, #4]
- 8001860:	f7ff fdf6 	bl	8001450 <UARTTxWrite>
+ 800185a:	f107 0340 	add.w	r3, r7, #64	; 0x40
+ 800185e:	2209      	movs	r2, #9
+ 8001860:	4619      	mov	r1, r3
+ 8001862:	6878      	ldr	r0, [r7, #4]
+ 8001864:	f7ff fdf4 	bl	8001450 <UARTTxWrite>
 
 				//send data in memory from initial position
 				UARTTxWrite(uart, &(Memory[startAddr]),numberOfDataToRead);
- 8001864:	f8b7 3062 	ldrh.w	r3, [r7, #98]	; 0x62
- 8001868:	68fa      	ldr	r2, [r7, #12]
- 800186a:	4413      	add	r3, r2
- 800186c:	f8b7 2060 	ldrh.w	r2, [r7, #96]	; 0x60
- 8001870:	4619      	mov	r1, r3
- 8001872:	6878      	ldr	r0, [r7, #4]
- 8001874:	f7ff fdec 	bl	8001450 <UARTTxWrite>
+ 8001868:	f8b7 3062 	ldrh.w	r3, [r7, #98]	; 0x62
+ 800186c:	68fa      	ldr	r2, [r7, #12]
+ 800186e:	4413      	add	r3, r2
+ 8001870:	f8b7 2060 	ldrh.w	r2, [r7, #96]	; 0x60
+ 8001874:	4619      	mov	r1, r3
+ 8001876:	6878      	ldr	r0, [r7, #4]
+ 8001878:	f7ff fdea 	bl	8001450 <UARTTxWrite>
 
 				//send crc
 				UARTTxWrite(uart, crctemp,2);
- 8001878:	f107 033c 	add.w	r3, r7, #60	; 0x3c
- 800187c:	2202      	movs	r2, #2
- 800187e:	4619      	mov	r1, r3
- 8001880:	6878      	ldr	r0, [r7, #4]
- 8001882:	f7ff fde5 	bl	8001450 <UARTTxWrite>
+ 800187c:	f107 033c 	add.w	r3, r7, #60	; 0x3c
+ 8001880:	2202      	movs	r2, #2
+ 8001882:	4619      	mov	r1, r3
+ 8001884:	6878      	ldr	r0, [r7, #4]
+ 8001886:	f7ff fde3 	bl	8001450 <UARTTxWrite>
 				break;
- 8001886:	e099      	b.n	80019bc <DynamixelProtocal2+0x4dc>
+ 800188a:	e099      	b.n	80019c0 <DynamixelProtocal2+0x4e0>
 			}
 			case 0x03://WRITE
 			{
 //				//LAB
 //				//parameter 0 + parameter 1
 				uint16_t startAddr = (parameter[0]&0xFF)|(parameter[1]<<8 &0xFF);
- 8001888:	4b54      	ldr	r3, [pc, #336]	; (80019dc <DynamixelProtocal2+0x4fc>)
- 800188a:	781b      	ldrb	r3, [r3, #0]
- 800188c:	f8a7 3066 	strh.w	r3, [r7, #102]	; 0x66
+ 800188c:	4b53      	ldr	r3, [pc, #332]	; (80019dc <DynamixelProtocal2+0x4fc>)
+ 800188e:	781b      	ldrb	r3, [r3, #0]
+ 8001890:	f8a7 3066 	strh.w	r3, [r7, #102]	; 0x66
 
 				//packgage ตอบกลับ
 				//H1 H2 H3 RSRV PACKET_ID LEN1 LEN2 INST ERR
 				uint8_t temp[] = {0xff,0xff,0xfd,0x00,0x00,0x04,0x00,0x55,0x00};
- 8001890:	4a54      	ldr	r2, [pc, #336]	; (80019e4 <DynamixelProtocal2+0x504>)
- 8001892:	f107 0330 	add.w	r3, r7, #48	; 0x30
- 8001896:	ca07      	ldmia	r2, {r0, r1, r2}
- 8001898:	c303      	stmia	r3!, {r0, r1}
- 800189a:	701a      	strb	r2, [r3, #0]
+ 8001894:	4a53      	ldr	r2, [pc, #332]	; (80019e4 <DynamixelProtocal2+0x504>)
+ 8001896:	f107 0330 	add.w	r3, r7, #48	; 0x30
+ 800189a:	ca07      	ldmia	r2, {r0, r1, r2}
+ 800189c:	c303      	stmia	r3!, {r0, r1}
+ 800189e:	701a      	strb	r2, [r3, #0]
 				temp[4] = MotorID;
- 800189c:	7afb      	ldrb	r3, [r7, #11]
- 800189e:	f887 3034 	strb.w	r3, [r7, #52]	; 0x34
+ 80018a0:	7afb      	ldrb	r3, [r7, #11]
+ 80018a2:	f887 3034 	strb.w	r3, [r7, #52]	; 0x34
 
 				uint16_t crc_calc = update_crc(0, temp, 9);
- 80018a2:	f107 0330 	add.w	r3, r7, #48	; 0x30
- 80018a6:	2209      	movs	r2, #9
- 80018a8:	4619      	mov	r1, r3
- 80018aa:	2000      	movs	r0, #0
- 80018ac:	f000 f8a6 	bl	80019fc <update_crc>
- 80018b0:	4603      	mov	r3, r0
- 80018b2:	f8a7 3064 	strh.w	r3, [r7, #100]	; 0x64
+ 80018a6:	f107 0330 	add.w	r3, r7, #48	; 0x30
+ 80018aa:	2209      	movs	r2, #9
+ 80018ac:	4619      	mov	r1, r3
+ 80018ae:	2000      	movs	r0, #0
+ 80018b0:	f000 f8a4 	bl	80019fc <update_crc>
+ 80018b4:	4603      	mov	r3, r0
+ 80018b6:	f8a7 3064 	strh.w	r3, [r7, #100]	; 0x64
 				//crc_calc = update_crc(crc_calc ,&(Memory[startAddr]),9); //คำนวน crc ต่อ
 				uint8_t crctemp[2];
 				crctemp[0] = crc_calc&0xff;
- 80018b6:	f8b7 3064 	ldrh.w	r3, [r7, #100]	; 0x64
- 80018ba:	b2db      	uxtb	r3, r3
- 80018bc:	f887 302c 	strb.w	r3, [r7, #44]	; 0x2c
+ 80018ba:	f8b7 3064 	ldrh.w	r3, [r7, #100]	; 0x64
+ 80018be:	b2db      	uxtb	r3, r3
+ 80018c0:	f887 302c 	strb.w	r3, [r7, #44]	; 0x2c
 				crctemp[1] = (crc_calc>>8)&0xff;
- 80018c0:	f8b7 3064 	ldrh.w	r3, [r7, #100]	; 0x64
- 80018c4:	0a1b      	lsrs	r3, r3, #8
- 80018c6:	b29b      	uxth	r3, r3
- 80018c8:	b2db      	uxtb	r3, r3
- 80018ca:	f887 302d 	strb.w	r3, [r7, #45]	; 0x2d
+ 80018c4:	f8b7 3064 	ldrh.w	r3, [r7, #100]	; 0x64
+ 80018c8:	0a1b      	lsrs	r3, r3, #8
+ 80018ca:	b29b      	uxth	r3, r3
+ 80018cc:	b2db      	uxtb	r3, r3
+ 80018ce:	f887 302d 	strb.w	r3, [r7, #45]	; 0x2d
 
 				//send temp
 				UARTTxWrite(uart, temp,9);
- 80018ce:	f107 0330 	add.w	r3, r7, #48	; 0x30
- 80018d2:	2209      	movs	r2, #9
- 80018d4:	4619      	mov	r1, r3
- 80018d6:	6878      	ldr	r0, [r7, #4]
- 80018d8:	f7ff fdba 	bl	8001450 <UARTTxWrite>
+ 80018d2:	f107 0330 	add.w	r3, r7, #48	; 0x30
+ 80018d6:	2209      	movs	r2, #9
+ 80018d8:	4619      	mov	r1, r3
+ 80018da:	6878      	ldr	r0, [r7, #4]
+ 80018dc:	f7ff fdb8 	bl	8001450 <UARTTxWrite>
 
 				//send crc
 				UARTTxWrite(uart, crctemp,2);
- 80018dc:	f107 032c 	add.w	r3, r7, #44	; 0x2c
- 80018e0:	2202      	movs	r2, #2
- 80018e2:	4619      	mov	r1, r3
- 80018e4:	6878      	ldr	r0, [r7, #4]
- 80018e6:	f7ff fdb3 	bl	8001450 <UARTTxWrite>
+ 80018e0:	f107 032c 	add.w	r3, r7, #44	; 0x2c
+ 80018e4:	2202      	movs	r2, #2
+ 80018e6:	4619      	mov	r1, r3
+ 80018e8:	6878      	ldr	r0, [r7, #4]
+ 80018ea:	f7ff fdb1 	bl	8001450 <UARTTxWrite>
 
 
 				//0x74 +0x00 =116
 				int i=0;
- 80018ea:	2300      	movs	r3, #0
- 80018ec:	66fb      	str	r3, [r7, #108]	; 0x6c
-				//all parameter - parameter[0] - parameter[1]
-				for (i = 0; i < CollectedData-2; i++)
  80018ee:	2300      	movs	r3, #0
  80018f0:	66fb      	str	r3, [r7, #108]	; 0x6c
- 80018f2:	e00c      	b.n	800190e <DynamixelProtocal2+0x42e>
+				//all parameter - parameter[0] - parameter[1]
+				for (i = 0; i < CollectedData-2; i++)
+ 80018f2:	2300      	movs	r3, #0
+ 80018f4:	66fb      	str	r3, [r7, #108]	; 0x6c
+ 80018f6:	e00c      	b.n	8001912 <DynamixelProtocal2+0x432>
 				{
 					MainMemory[startAddr+i] = parameter[2+i];
- 80018f4:	6efb      	ldr	r3, [r7, #108]	; 0x6c
- 80018f6:	1c9a      	adds	r2, r3, #2
- 80018f8:	f8b7 1066 	ldrh.w	r1, [r7, #102]	; 0x66
- 80018fc:	6efb      	ldr	r3, [r7, #108]	; 0x6c
- 80018fe:	440b      	add	r3, r1
- 8001900:	4936      	ldr	r1, [pc, #216]	; (80019dc <DynamixelProtocal2+0x4fc>)
- 8001902:	5c89      	ldrb	r1, [r1, r2]
- 8001904:	4a38      	ldr	r2, [pc, #224]	; (80019e8 <DynamixelProtocal2+0x508>)
- 8001906:	54d1      	strb	r1, [r2, r3]
+ 80018f8:	6efb      	ldr	r3, [r7, #108]	; 0x6c
+ 80018fa:	1c9a      	adds	r2, r3, #2
+ 80018fc:	f8b7 1066 	ldrh.w	r1, [r7, #102]	; 0x66
+ 8001900:	6efb      	ldr	r3, [r7, #108]	; 0x6c
+ 8001902:	440b      	add	r3, r1
+ 8001904:	4935      	ldr	r1, [pc, #212]	; (80019dc <DynamixelProtocal2+0x4fc>)
+ 8001906:	5c89      	ldrb	r1, [r1, r2]
+ 8001908:	4a37      	ldr	r2, [pc, #220]	; (80019e8 <DynamixelProtocal2+0x508>)
+ 800190a:	54d1      	strb	r1, [r2, r3]
 				for (i = 0; i < CollectedData-2; i++)
- 8001908:	6efb      	ldr	r3, [r7, #108]	; 0x6c
- 800190a:	3301      	adds	r3, #1
- 800190c:	66fb      	str	r3, [r7, #108]	; 0x6c
- 800190e:	4b37      	ldr	r3, [pc, #220]	; (80019ec <DynamixelProtocal2+0x50c>)
- 8001910:	881b      	ldrh	r3, [r3, #0]
- 8001912:	3b02      	subs	r3, #2
- 8001914:	6efa      	ldr	r2, [r7, #108]	; 0x6c
- 8001916:	429a      	cmp	r2, r3
- 8001918:	dbec      	blt.n	80018f4 <DynamixelProtocal2+0x414>
+ 800190c:	6efb      	ldr	r3, [r7, #108]	; 0x6c
+ 800190e:	3301      	adds	r3, #1
+ 8001910:	66fb      	str	r3, [r7, #108]	; 0x6c
+ 8001912:	4b36      	ldr	r3, [pc, #216]	; (80019ec <DynamixelProtocal2+0x50c>)
+ 8001914:	881b      	ldrh	r3, [r3, #0]
+ 8001916:	3b02      	subs	r3, #2
+ 8001918:	6efa      	ldr	r2, [r7, #108]	; 0x6c
+ 800191a:	429a      	cmp	r2, r3
+ 800191c:	dbec      	blt.n	80018f8 <DynamixelProtocal2+0x418>
 				}
 
 				break;
- 800191a:	e04f      	b.n	80019bc <DynamixelProtocal2+0x4dc>
+ 800191e:	e04f      	b.n	80019c0 <DynamixelProtocal2+0x4e0>
 			}
 
 			default: //Unknown Inst
 			{
 				uint8_t temp[] =
- 800191c:	4a34      	ldr	r2, [pc, #208]	; (80019f0 <DynamixelProtocal2+0x510>)
- 800191e:	f107 0320 	add.w	r3, r7, #32
- 8001922:	ca07      	ldmia	r2, {r0, r1, r2}
- 8001924:	c303      	stmia	r3!, {r0, r1}
- 8001926:	801a      	strh	r2, [r3, #0]
- 8001928:	3302      	adds	r3, #2
- 800192a:	0c12      	lsrs	r2, r2, #16
- 800192c:	701a      	strb	r2, [r3, #0]
+ 8001920:	4a33      	ldr	r2, [pc, #204]	; (80019f0 <DynamixelProtocal2+0x510>)
+ 8001922:	f107 0320 	add.w	r3, r7, #32
+ 8001926:	ca07      	ldmia	r2, {r0, r1, r2}
+ 8001928:	c303      	stmia	r3!, {r0, r1}
+ 800192a:	801a      	strh	r2, [r3, #0]
+ 800192c:	3302      	adds	r3, #2
+ 800192e:	0c12      	lsrs	r2, r2, #16
+ 8001930:	701a      	strb	r2, [r3, #0]
 				{ 0xff, 0xff, 0xfd, 0x00, 0x00, 0x05, 0x00, 0x55, 0x02, 0x00,
 						0x00 };
 				temp[4] = MotorID;
- 800192e:	7afb      	ldrb	r3, [r7, #11]
- 8001930:	f887 3024 	strb.w	r3, [r7, #36]	; 0x24
+ 8001932:	7afb      	ldrb	r3, [r7, #11]
+ 8001934:	f887 3024 	strb.w	r3, [r7, #36]	; 0x24
 				//package ใหม่ = 0
 				uint16_t crc_calc = update_crc(0, temp, 9);
- 8001934:	f107 0320 	add.w	r3, r7, #32
- 8001938:	2209      	movs	r2, #9
- 800193a:	4619      	mov	r1, r3
- 800193c:	2000      	movs	r0, #0
- 800193e:	f000 f85d 	bl	80019fc <update_crc>
- 8001942:	4603      	mov	r3, r0
- 8001944:	f8a7 305a 	strh.w	r3, [r7, #90]	; 0x5a
+ 8001938:	f107 0320 	add.w	r3, r7, #32
+ 800193c:	2209      	movs	r2, #9
+ 800193e:	4619      	mov	r1, r3
+ 8001940:	2000      	movs	r0, #0
+ 8001942:	f000 f85b 	bl	80019fc <update_crc>
+ 8001946:	4603      	mov	r3, r0
+ 8001948:	f8a7 305a 	strh.w	r3, [r7, #90]	; 0x5a
 				temp[9] = crc_calc & 0xff;
- 8001948:	f8b7 305a 	ldrh.w	r3, [r7, #90]	; 0x5a
- 800194c:	b2db      	uxtb	r3, r3
- 800194e:	f887 3029 	strb.w	r3, [r7, #41]	; 0x29
+ 800194c:	f8b7 305a 	ldrh.w	r3, [r7, #90]	; 0x5a
+ 8001950:	b2db      	uxtb	r3, r3
+ 8001952:	f887 3029 	strb.w	r3, [r7, #41]	; 0x29
 				temp[10] = (crc_calc >> 8) & 0xFF;
- 8001952:	f8b7 305a 	ldrh.w	r3, [r7, #90]	; 0x5a
- 8001956:	0a1b      	lsrs	r3, r3, #8
- 8001958:	b29b      	uxth	r3, r3
- 800195a:	b2db      	uxtb	r3, r3
- 800195c:	f887 302a 	strb.w	r3, [r7, #42]	; 0x2a
+ 8001956:	f8b7 305a 	ldrh.w	r3, [r7, #90]	; 0x5a
+ 800195a:	0a1b      	lsrs	r3, r3, #8
+ 800195c:	b29b      	uxth	r3, r3
+ 800195e:	b2db      	uxtb	r3, r3
+ 8001960:	f887 302a 	strb.w	r3, [r7, #42]	; 0x2a
 				UARTTxWrite(uart, temp, 11);
- 8001960:	f107 0320 	add.w	r3, r7, #32
- 8001964:	220b      	movs	r2, #11
- 8001966:	4619      	mov	r1, r3
- 8001968:	6878      	ldr	r0, [r7, #4]
- 800196a:	f7ff fd71 	bl	8001450 <UARTTxWrite>
+ 8001964:	f107 0320 	add.w	r3, r7, #32
+ 8001968:	220b      	movs	r2, #11
+ 800196a:	4619      	mov	r1, r3
+ 800196c:	6878      	ldr	r0, [r7, #4]
+ 800196e:	f7ff fd6f 	bl	8001450 <UARTTxWrite>
 
 				break;
- 800196e:	e025      	b.n	80019bc <DynamixelProtocal2+0x4dc>
+ 8001972:	e025      	b.n	80019c0 <DynamixelProtocal2+0x4e0>
 			}
 			}
 		}
 		else //crc error
 		{
 			uint8_t temp[] =
- 8001970:	4a20      	ldr	r2, [pc, #128]	; (80019f4 <DynamixelProtocal2+0x514>)
- 8001972:	f107 0314 	add.w	r3, r7, #20
- 8001976:	ca07      	ldmia	r2, {r0, r1, r2}
- 8001978:	c303      	stmia	r3!, {r0, r1}
- 800197a:	801a      	strh	r2, [r3, #0]
- 800197c:	3302      	adds	r3, #2
- 800197e:	0c12      	lsrs	r2, r2, #16
- 8001980:	701a      	strb	r2, [r3, #0]
+ 8001974:	4a1f      	ldr	r2, [pc, #124]	; (80019f4 <DynamixelProtocal2+0x514>)
+ 8001976:	f107 0314 	add.w	r3, r7, #20
+ 800197a:	ca07      	ldmia	r2, {r0, r1, r2}
+ 800197c:	c303      	stmia	r3!, {r0, r1}
+ 800197e:	801a      	strh	r2, [r3, #0]
+ 8001980:	3302      	adds	r3, #2
+ 8001982:	0c12      	lsrs	r2, r2, #16
+ 8001984:	701a      	strb	r2, [r3, #0]
 			{ 0xff, 0xff, 0xfd, 0x00, 0x00, 0x05, 0x00, 0x55, 0x03, 0x00, 0x00 };
 			temp[4] = MotorID;
- 8001982:	7afb      	ldrb	r3, [r7, #11]
- 8001984:	763b      	strb	r3, [r7, #24]
+ 8001986:	7afb      	ldrb	r3, [r7, #11]
+ 8001988:	763b      	strb	r3, [r7, #24]
 			uint16_t crc_calc = update_crc(0, temp, 9);
- 8001986:	f107 0314 	add.w	r3, r7, #20
- 800198a:	2209      	movs	r2, #9
- 800198c:	4619      	mov	r1, r3
- 800198e:	2000      	movs	r0, #0
- 8001990:	f000 f834 	bl	80019fc <update_crc>
- 8001994:	4603      	mov	r3, r0
- 8001996:	f8a7 3068 	strh.w	r3, [r7, #104]	; 0x68
+ 800198a:	f107 0314 	add.w	r3, r7, #20
+ 800198e:	2209      	movs	r2, #9
+ 8001990:	4619      	mov	r1, r3
+ 8001992:	2000      	movs	r0, #0
+ 8001994:	f000 f832 	bl	80019fc <update_crc>
+ 8001998:	4603      	mov	r3, r0
+ 800199a:	f8a7 3068 	strh.w	r3, [r7, #104]	; 0x68
 			temp[9] = crc_calc & 0xff;
- 800199a:	f8b7 3068 	ldrh.w	r3, [r7, #104]	; 0x68
- 800199e:	b2db      	uxtb	r3, r3
- 80019a0:	777b      	strb	r3, [r7, #29]
+ 800199e:	f8b7 3068 	ldrh.w	r3, [r7, #104]	; 0x68
+ 80019a2:	b2db      	uxtb	r3, r3
+ 80019a4:	777b      	strb	r3, [r7, #29]
 			temp[10] = (crc_calc >> 8) & 0xFF;
- 80019a2:	f8b7 3068 	ldrh.w	r3, [r7, #104]	; 0x68
- 80019a6:	0a1b      	lsrs	r3, r3, #8
- 80019a8:	b29b      	uxth	r3, r3
- 80019aa:	b2db      	uxtb	r3, r3
- 80019ac:	77bb      	strb	r3, [r7, #30]
+ 80019a6:	f8b7 3068 	ldrh.w	r3, [r7, #104]	; 0x68
+ 80019aa:	0a1b      	lsrs	r3, r3, #8
+ 80019ac:	b29b      	uxth	r3, r3
+ 80019ae:	b2db      	uxtb	r3, r3
+ 80019b0:	77bb      	strb	r3, [r7, #30]
 			UARTTxWrite(uart, temp, 11);
- 80019ae:	f107 0314 	add.w	r3, r7, #20
- 80019b2:	220b      	movs	r2, #11
- 80019b4:	4619      	mov	r1, r3
- 80019b6:	6878      	ldr	r0, [r7, #4]
- 80019b8:	f7ff fd4a 	bl	8001450 <UARTTxWrite>
+ 80019b2:	f107 0314 	add.w	r3, r7, #20
+ 80019b6:	220b      	movs	r2, #11
+ 80019b8:	4619      	mov	r1, r3
+ 80019ba:	6878      	ldr	r0, [r7, #4]
+ 80019bc:	f7ff fd48 	bl	8001450 <UARTTxWrite>
 		}
 		State = DNMXP_idle;
- 80019bc:	4b0e      	ldr	r3, [pc, #56]	; (80019f8 <DynamixelProtocal2+0x518>)
- 80019be:	2200      	movs	r2, #0
- 80019c0:	701a      	strb	r2, [r3, #0]
+ 80019c0:	4b0d      	ldr	r3, [pc, #52]	; (80019f8 <DynamixelProtocal2+0x518>)
+ 80019c2:	2200      	movs	r2, #0
+ 80019c4:	701a      	strb	r2, [r3, #0]
 		break;
- 80019c2:	e004      	b.n	80019ce <DynamixelProtocal2+0x4ee>
-		break;
- 80019c4:	bf00      	nop
  80019c6:	e002      	b.n	80019ce <DynamixelProtocal2+0x4ee>
 		break;
  80019c8:	bf00      	nop
